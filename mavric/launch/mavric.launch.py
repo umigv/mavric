@@ -56,15 +56,16 @@ def generate_launch_description():
             executable='ekf_node',
             name='ekf_filter_node',
             output='screen',
-            parameters=[os.path.join(get_package_share_directory("robot_localization"), 'params', 'ekf.yaml')],
+            parameters=[os.path.join(get_package_share_directory("mavric"), 'config', 'mavric_ekf.yaml')],
            ),
         ])
    
+   
+   
    slam_toolbox = IncludeLaunchDescription(
       PythonLaunchDescriptionSource([os.path.join(
-         get_package_share_directory('launch_tutorial'), 'launch'),
-         'broadcaster_listener_launch.py']),
-      launch_arguments={'target_frame': 'carrot1'}.items(),
+         get_package_share_directory('slam_toolbox'), 'launch'),
+         'online_async_launch.py'])
       )
 
 
