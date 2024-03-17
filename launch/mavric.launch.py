@@ -49,6 +49,7 @@ def generate_launch_description():
                                                  event=Shutdown())],
                                          )),
                                      ])
+   
    robot_localization = LaunchDescription([
         launch_ros.actions.Node(
             package='robot_localization',
