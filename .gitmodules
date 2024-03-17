@@ -1,0 +1,11 @@
+[submodule "bno055"]
+	path = bno055
+	url = https://github.com/flynneva/bno055.git
+[submodule "velodyne"]
+	path = velodyne
+	url = https://github.com/ros-drivers/velodyne.git
+	branch = ros2
+[submodule "robot_localization"]
+	path = robot_localization
+	url = https://github.com/cra-ros-pkg/robot_localization.git
+	branch = ros2
