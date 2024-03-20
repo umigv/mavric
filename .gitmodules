@@ -9,3 +9,6 @@
 	path = robot_localization
 	url = https://github.com/cra-ros-pkg/robot_localization.git
 	branch = ros2
+[submodule "velodyne_simulator"]
+	path = velodyne_simulator
+	url = https://github.com/umigv/velodyne_simulator.git

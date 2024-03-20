@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+
+<!-- Brief: Standard IMU -->
+<!-- Shape, Collision, Inertia: Box with relevant collision and constant inertia -->
+<!-- Mounting Location: Bottom center of the IMU -->
+<!-- Joint Type: fixed -->
+<!-- Plugin: libgazebo_ros_imu_sensor.so -->
+<!-- Param name: the name of the IMU. Published topic is /{name}_controller/out -->
+<!-- Param mass: mass of the IMU -->
+<!-- Param length: length of the IMU -->
+<!-- Param width: width of the IMU -->
+<!-- Param height: height of the IMU -->
+<!-- Param parent: name of the parent link, defaulted to base_link -->
+<!-- Param joint_origin: location of the IMU relative to parent link -->
+<robot xmlns:xacro="http://ros.org/wiki/xacro" name="caster">
+    <xacro:macro name="imu" params="name mass length width height parent:=base_link *joint_origin">
+        <!-- Includes -->
+        <xacro:include filename="$(find mavric_launch)/urdf/inertia.xacro"/>
+
+        <!-- Imu base link -->
+        <link name="${name}_base_link" />
+
+        <joint name="${name}_base_joint" type="fixed">
+            <xacro:insert_block name="joint_origin" />
+            <parent link="${parent}" />
+            <child link="${name}_base_link" />
+            <axis xyz="0 1 0" />
+        </joint>
+
+
+        <!-- Imu link -->
+        <link name="${name}_link">
+		    <xacro:box_inertia mass="${mass}" length="${length}" width="${width}" height="${height}">
+                <origin xyz="0 0 0" rpy="0 0 0" />
+            </xacro:box_inertia>
+
+            <visual>
+                <origin xyz="0 0 0" rpy="0 0 0"/>
+                <geometry>
+                    <box size="${length} ${width} ${height}"/>
+                </geometry>
+            </visual>
+
+            <collision>
+                <origin xyz="0 0 0" rpy="0 0 0"/>
+                <geometry>
+                    <box size="${length} ${width} ${height}"/>
+                </geometry>
+            </collision>
+        </link>
+
+        <joint name="${name}_joint" type="fixed">
+            <origin xyz="0 0 ${height/2}" rpy="0 0 0"/>
+            <parent link="${name}_base_link" />
+            <child link="${name}_link" />
+        </joint>
+
+
+        <!-- Imu color -->    
+        <gazebo reference="${name}_link">
+            <material>Gazebo/Purple</material>
+        </gazebo>
+
+
+        <!-- Imu plugin -->
+        <gazebo reference="${name}_link">
+            <gravity>true</gravity>
+
+            <sensor name="${name}" type="imu">
+                <always_on>true</always_on>
+                <update_rate>100.0</update_rate>
+                <visualize>true</visualize>
+                <topic>__default_topic__</topic>
+                <pose>0 0 0 0 0 0</pose>
+
+                <plugin name="${name}_controller" filename="libgazebo_ros_imu_sensor.so">
+                    <topicName>imu</topicName>
+                    <bodyName>${name}_link</bodyName>
+                    <updateRateHZ>100.0</updateRateHZ>
+                    <gaussianNoise>0.0</gaussianNoise>
+                    <xyzOffset>0 0 0</xyzOffset>
+                    <rpyOffset>0 0 0</rpyOffset>
+                    <frameName>${name}_link</frameName>
+                    <initialOrientationAsReference>false</initialOrientationAsReference>
+                </plugin>
+            </sensor>
+        </gazebo>
+    </xacro:macro>
+</robot>

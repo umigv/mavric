@@ -1,0 +1,84 @@
+<?xml version='1.0'?>
+
+<robot name="marvin" xmlns:xacro="http://www.ros.org/wiki/xacro"> 
+    <!-- Includes -->
+    <xacro:include filename="$(find mavric_launch)/urdf/constants.xacro"/>
+
+	<!-- Base_link -->
+    <link name="base_link" />
+
+
+    <!-- Footprint -->
+    <link name="base_footprint" />  
+
+    <joint name="base_joint" type="fixed">
+        <origin xyz="0 0 ${-chassis_z_offset}" rpy="0 0 0" />
+        <parent link="base_link" />
+        <child link="base_footprint" />
+    </joint>
+
+    <!-- Odom -->
+    <link name="odom" />  
+
+    <joint name="odom_joint" type="fixed">
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <parent link="odom" />
+        <child link="base_link" />
+    </joint>
+
+    <!-- Chassis -->
+    <xacro:include filename="$(find mavric_launch)/urdf/chassis.xacro"/>
+
+
+    <!-- Caster -->
+    <xacro:include filename="$(find mavric_launch)/urdf/caster.xacro"/>
+	<xacro:caster name="caster" mass="${caster_mass}" radius="${caster_radius}">
+        <origin xyz="${caster_x_offset} 0 ${caster_radius-chassis_z_offset}" rpy="0 0 0" />
+	</xacro:caster>
+
+
+    <!-- Wheels -->
+    <xacro:include filename="$(find mavric_launch)/urdf/wheel.xacro"/>
+	<xacro:wheel name="right_wheel" mass="${wheel_mass}" radius="${wheel_radius}" width="${wheel_width}">
+		<origin xyz="0 -${track_width / 2} ${wheel_radius-chassis_z_offset}" rpy="0 0 0" />
+	</xacro:wheel>
+	<xacro:wheel name="left_wheel" mass="${wheel_mass}" radius="${wheel_radius}" width="${wheel_width}">
+		<origin xyz="0 ${track_width/2} ${wheel_radius-chassis_z_offset}" rpy="0 0 0" />
+	</xacro:wheel>
+
+
+    <!-- Camera -->
+	<xacro:include filename="$(find mavric_launch)/urdf/depth_camera.xacro" />
+	<xacro:depth_camera name="zed" mass="${camera_mass}" length = "${camera_length}" width="${camera_width}" height="${camera_height}" parent="base_link">
+		<origin xyz="${camera_x_offset} 0 ${camera_z_offset}" rpy="0 ${camera_angle} 0" />
+	</xacro:depth_camera>
+
+
+    <!-- Lidar -->
+    <xacro:include filename="$(find velodyne_description)/urdf/VLP-16.urdf.xacro" />
+	<xacro:VLP-16 parent="base_link" name="velodyne" topic="/velodyne_points" hz="20" samples="440" gpu="true">
+		<origin xyz="0 0 ${lidar_height}" rpy="0 0 0" />
+	</xacro:VLP-16>
+
+
+	<!-- IMU -->
+    <xacro:include filename="$(find mavric_launch)/urdf/imu.xacro" />
+    <xacro:imu name="imu" mass="${imu_mass}" length="${imu_length}" width="${imu_width}" height="${imu_height}">
+		<origin xyz="${-chassis_tower_length / 2 - chassis_electrical_length/2} 0 ${chassis_electrical_height}" rpy="0 0 0" />
+    </xacro:imu>
+
+
+    <!-- Encoder -->
+    <link name="encoder" />
+
+	<joint name="encoder_joint" type="fixed">
+		<origin xyz="0 0 ${wheel_radius-chassis_z_offset}" rpy="0 0 0" />
+		<parent link="base_link" />
+		<child link="encoder" />
+		<axis xyz="0 1 0" />
+	</joint>
+
+
+    <!-- Gazebo plugins -->
+    <xacro:include filename="$(find mavric_launch)/urdf/plugins.xacro"/>
+</robot>

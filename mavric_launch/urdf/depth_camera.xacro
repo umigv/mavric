@@ -1,0 +1,103 @@
+<?xml version="1.0"?>
+
+<!-- Brief: Depth camera with property mimicking to the ZED 2i camera -->
+<!-- Shape, Collision, Inertia: Box with relevant collision and constant inertia -->
+<!-- Mounting Location: Bottom center of the camera -->
+<!-- Joint Type: fixed -->
+<!-- Plugin: libgazebo_ros_camera.so (depth camera) -->
+<!-- Param name: the name of the depth camera. All published topics will start with /{name} -->
+<!-- Param mass: mass of the depth camera -->
+<!-- Param length: length of the depth camera -->
+<!-- Param width: width of the depth camera -->
+<!-- Param height: height of the depth camera -->
+<!-- Param parent: name of the parent link, defaulted to base_link -->
+<!-- Param joint_origin: location of the depth camera relative to parent link -->
+<robot xmlns:xacro="http://ros.org/wiki/xacro" name="depth_camera">
+    <xacro:macro name="depth_camera" params="name mass length width height parent:=base_link *joint_origin">
+        <!-- Includes -->
+        <xacro:include filename="$(find mavric_launch)/urdf/inertia.xacro"/>
+
+        <!-- Depth camera base link -->
+        <link name="${name}_base_link" />
+
+        <joint name="${name}_base_joint" type="fixed">
+            <xacro:insert_block name="joint_origin" />
+            <parent link="${parent}" />
+            <child link="${name}_base_link" />
+            <axis xyz="0 1 0" />
+        </joint>
+
+
+        <!-- Depth camera link -->
+        <link name="${name}_link">
+            <xacro:box_inertia mass="${mass}" length="${length}" width="${width}" height="${height}">
+                <origin xyz="0 0 0" rpy="0 0 0" />
+            </xacro:box_inertia>
+    
+            <visual>
+                <origin xyz="0 0 0" rpy="0 0 0"/>
+                <geometry>
+                    <box size="${length} ${width} ${height}"/>
+                </geometry>
+            </visual>
+    
+            <collision>
+                <origin xyz="0 0 0" rpy="0 0 0"/>
+                <geometry>
+                    <box size="${length} ${width} ${height}"/>
+                </geometry>
+            </collision>
+        </link>
+    
+        <joint name="${name}_joint" type="fixed">
+            <origin xyz="0 0 ${height/2}" rpy="0 0 0"/>
+            <parent link="${name}_base_link" />
+            <child link="${name}_link" />
+        </joint>
+
+
+        <!-- Depth camera optical link -->
+        <link name="${name}_optical_link" />
+        
+        <joint name="${name}_optical_joint" type="fixed">
+            <origin xyz="0 0 0" rpy="${-pi/2} 0 ${-pi/2}"/>
+            <parent link="${name}_link" />
+            <child link="${name}_optical_link" />
+        </joint>
+
+
+        <!-- Depth camera color -->    
+        <gazebo reference="${name}_link">
+            <material>Gazebo/Black</material>
+        </gazebo>
+
+
+        <!-- Depth camera plugin -->
+        <gazebo reference="${name}_link">
+            <sensor name="${name}" type="depth">
+                <update_rate>15.0</update_rate>
+                <visualize>true</visualize>
+                <always_on>true</always_on>
+
+                <camera>
+                    <horizontal_fov>1.91986</horizontal_fov>
+                    <image>
+                        <width>2560</width>
+                        <height>720</height>
+                        <format>B8G8R8</format>
+                    </image>
+                    <clip>
+                        <near>0.3</near>
+                        <far>20</far>
+                    </clip>
+                </camera>
+
+                <plugin name="${name}_controller" filename="libgazebo_ros_camera.so">
+                    <frame_name>${name}_optical_link</frame_name>
+                    <min_depth>0</min_depth>
+                    <max_depth>100</max_depth>
+                </plugin>
+            </sensor>
+        </gazebo>
+    </xacro:macro>
+</robot>
