@@ -23,6 +23,22 @@ install(DIRECTORY
   urdf
   DESTINATION share/${PROJECT_NAME}
 )
+install(DIRECTORY
+  rviz
+  DESTINATION share/${PROJECT_NAME}
+)
+install(
+  PROGRAMS scripts/activate_lidar.sh
+  DESTINATION lib/${PROJECT_NAME}
+)
+install(
+  PROGRAMS scripts/startup.sh
+  DESTINATION lib/${PROJECT_NAME}
+)
+install(
+  PROGRAMS scripts/compile_urdf.sh
+  DESTINATION lib/${PROJECT_NAME}
+)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
