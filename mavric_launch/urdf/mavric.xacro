@@ -18,13 +18,13 @@
     </joint>
 
     <!-- Odom -->
-    <link name="odom" />  
+    <!-- <link name="odom" />  
 
-    <joint name="odom_joint" type="fixed">
+    <joint name="odom_joint" type="floating">
         <origin xyz="0 0 0" rpy="0 0 0" />
         <parent link="odom" />
         <child link="base_link" />
-    </joint>
+    </joint> -->
 
     <!-- Chassis -->
     <xacro:include filename="$(find mavric_launch)/urdf/chassis.xacro"/>

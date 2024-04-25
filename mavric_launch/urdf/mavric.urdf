@@ -14,12 +14,13 @@
     <child link="base_footprint"/>
   </joint>
   <!-- Odom -->
-  <link name="odom"/>
-  <joint name="odom_joint" type="fixed">
-    <origin rpy="0 0 0" xyz="0 0 0"/>
-    <parent link="odom"/>
-    <child link="base_link"/>
-  </joint>
+  <!-- <link name="odom" />  
+
+    <joint name="odom_joint" type="floating">
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <parent link="odom" />
+        <child link="base_link" />
+    </joint> -->
   <!-- Chassis link -->
   <link name="chassis_link">
     <inertial>
